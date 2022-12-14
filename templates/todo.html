@@ -16,6 +16,7 @@
 			"{{ url_for('static', filename='utils.py') }}"
 		]
     </py-config>
+	<link rel="stylesheet" href="{{ url_for('static', filename='button.css') }}">
   </head>
 
   <body class="container">
@@ -30,7 +31,7 @@
     </div>
     <div>
       <input id="new-task-content" class="py-input" type="text">
-      <button id="new-task-btn" class="py-button" type="submit" py-click="add_task()">
+      <button id="new-task-btn" class="bn632-hover bn25" type="submit" py-click="add_task()">
         Add task
       </button>
     </div>
