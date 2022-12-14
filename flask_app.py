@@ -10,13 +10,13 @@ hw_status = 'Getting HW'
     
     
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello_world():
     # return render_template("todo.html")
     return 'HI'
     
 
-@app.route('/hpma_controller')
+@app.route('/hpma_controller', methods=['GET', 'POST'])
 def hpma_controller():
     return render_template("hpma_controller.html", status=hw_status)
     
