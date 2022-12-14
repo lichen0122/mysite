@@ -46,6 +46,12 @@ def set_all_hw_done():
 def get_hw_status():
     global hw_status
     return hw_status
+    
+@app.route('/json_handler', methods=['POST'])
+def json_handler(): 
+    request_json = request.get_json()
+    print(request_json)
+    return 'OK'
 
 if __name__ == '__main__':
     hw_status = 'Getting HW'

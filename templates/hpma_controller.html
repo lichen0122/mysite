@@ -63,8 +63,9 @@
   <script>
     function js_test_button_onclick(){
       var xhttp = new XMLHttpRequest();
-      xhttp.open("POST", "http://127.0.0.1:5000/", false);
-      xhttp.send();
+      xhttp.open("POST", "http://127.0.0.1:5000/json_handler", false);
+      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhttp.send(JSON.stringify({ "email": "hello@user.com", "response": { "name": "Tester" } }));
       document.getElementById("demo").innerHTML = xhttp.responseText;
     }
 
