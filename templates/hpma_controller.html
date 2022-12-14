@@ -55,6 +55,12 @@
 				All Done
 			</button>
 		</form>
+		
+		<form method='post' action={{ url_for('get_hw_status') }}>
+			<button id="all_hw_done" class="bn632-hover bn25" type="submit" py-click="get_hw_status()">
+				Get Status
+			</button>
+		</form>
     </div>
 
     <py-list id="myList"></py-list>
