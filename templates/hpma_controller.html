@@ -31,7 +31,7 @@
   <main>
     <section>
 
-    <div class="text-center w-full mb-8">
+    <!-- <div class="text-center w-full mb-8">
       <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">HPMA Controller || status: {{status}}</h1>
     </div>
 	
@@ -51,23 +51,47 @@
 		<form method='post' action={{ url_for('get_hw_status') }}>
 			<button id="all_hw_done" class="bn632-hover bn25" type="submit" py-click="get_hw_status()">Get Status</button>
 		</form>
-		
-		<button id="js_test_button" class="bn632-hover bn25" type="submit" onclick="js_test_button_onclick()">JS button</button>
-    </div>
-	
-    <p id="demo">Let AJAX change this text.</p>
+
+    <form method='post' action={{ url_for('get_hw_status') }}>
+			<button id="all_hw_done" class="bn632-hover bn25" type="submit" py-click="get_hw_status()">Get Status</button>
+		</form>
+    </div> -->
+
+    <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">HPMA Controller</h1>
+    <h3 id="hw_status"> Status: {{status}} </h3>
+
+    <button id="cur_hw_got" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Doing HW',   'cur_hw_got')">Cur Got</button>
+    <button id="cur_hw_done" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Getting HW', 'cur_hw_done')">Cur Done</button>
+    <button id="all_hw_done" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Terminated', 'all_hw_done')">All Done</button>
+    <button id="get_hw_status" class="bn632-hover bn25" type="submit" onclick="get_hw_status()">Get Status</button>
 
     </section>
   </main>
 
   <script>
-    function js_test_button_onclick(){
+    function send_json(json_obj){
       var base_url = window.location.origin;
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", base_url + "/json_handler", false);
       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      xhttp.send(JSON.stringify({ "email": "hello@user.com", "response": { "name": "Tester" } }));
-      document.getElementById("demo").innerHTML = xhttp.responseText;
+
+      xhttp.send(JSON.stringify(json_obj));
+
+      // document.getElementById("demo").innerHTML = "Json Send Result: " + xhttp.responseText;
+    }
+
+    function set_hw_status(hw_status, role){
+      var json_obj = { "hw_status": hw_status, "role": role }
+      send_json(json_obj)
+      get_hw_status()
+    }
+
+    function get_hw_status(){
+      var base_url = window.location.origin;
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", base_url + "/get_hw_status", false);
+      xhttp.send();
+      document.getElementById("hw_status").innerHTML = xhttp.responseText;
     }
 
   </script>
