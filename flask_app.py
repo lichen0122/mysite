@@ -7,7 +7,10 @@ hw_status = 'Doing HW'
 hw_status = 'Terminated'
 hw_status = 'Getting HW'
 
-    
+
+@app.route('/screen', methods=['GET', 'POST'])
+def screen():
+    return render_template("index.html")
     
 
 @app.route('/', methods=['GET', 'POST'])
