@@ -9,59 +9,245 @@
 </head>
 
 <body>
-  <h1>Show my screen</h1>
+  <h1>SCREEN</h1>
 
   <video autoplay id="screen-view" width="50%"></video>
+  <video autoplay id="localVideo" width="50%"></video>
+  <video autoplay id="remoteVideo" width="50%"></video>
   <input type="text" id="extension_id" name="extension_id" value="aeoghgdlagipmomceeifidefojmdecbc">
+  <input type="text" id="user_name" name="user_name" value="">
+  <input type="text" id="room" name="room" value="">
   <button id="get-screen">Get the screen</button>
   <button id="stop-screen" style="display:none">Stop the screen</button>
+  <script type="importmap">
+	{
+	  "imports": {
+		"socket.io-client": "https://cdn.socket.io/4.4.1/socket.io.esm.min.js"
+	  }
+	}
+  </script>
 
-<script>
-(() => {
-  var EXTENSION_ID = 'aeoghgdlagipmomceeifidefojmdecbc';
+  <script type="module">
+	import { io } from "socket.io-client";
+	
 
-  const video      = document.getElementById('screen-view');
-  const getScreen  = document.getElementById('get-screen');
-  const stopScreen = document.getElementById('stop-screen');
-  const request = { type: 'start_record', sources: ['window', 'screen', 'tab'] };
-  let stream;
-  
-  getScreen.addEventListener('click', event => {
-	console.log(chrome.runtime.id)
-	EXTENSION_ID = document.getElementById('extension_id').value;
-    chrome.runtime.sendMessage(EXTENSION_ID, request, response => {
-      if (response && response.type === 'success') {
-        navigator.mediaDevices.getUserMedia({
-          video: {
-            mandatory: {
-              chromeMediaSource: 'desktop',
-              chromeMediaSourceId: response.streamId,
-            }
-          }
-        }).then(returnedStream => {
-          stream = returnedStream;
-		  console.log(stream)
-		  video.srcObject = stream;
-          getScreen.style.display = "none";
-          stopScreen.style.display = "inline";
-        }).catch(err => {
-          console.error('Could not get stream: ', err);
-        });
-     } else {
-        console.error('Could not get stream');
-      }
-    });
-  });
-  
-  stopScreen.addEventListener('click', event => {
-    stream.getTracks().forEach(track => track.stop());
-    video.src = '';
-    stopScreen.style.display = "none";
-    getScreen.style.display = "inline";
-  });
+	// (() => {
+	//   var EXTENSION_ID = 'aeoghgdlagipmomceeifidefojmdecbc';
+
+	//   const video      = document.getElementById('screen-view');
+	//   const getScreen  = document.getElementById('get-screen');
+	//   const stopScreen = document.getElementById('stop-screen');
+	//   const request = { type: 'start_record', sources: ['window', 'screen', 'tab'] };
+	//   let stream;
 	  
+	//   getScreen.addEventListener('click', event => {
+	// 	console.log(chrome.runtime.id)
+	// 	EXTENSION_ID = document.getElementById('extension_id').value;
+	// 	chrome.runtime.sendMessage(EXTENSION_ID, request, response => {
+	// 	  if (response && response.type === 'success') {
+	// 		navigator.mediaDevices.getUserMedia({
+	// 		  video: {
+	// 			mandatory: {
+	// 			  chromeMediaSource: 'desktop',
+	// 			  chromeMediaSourceId: response.streamId,
+	// 			}
+	// 		  }
+	// 		}).then(returnedStream => {
+	// 		  stream = returnedStream;
+	// 		  console.log(stream)
+	// 		  console.log(stream.getVideoTracks()[0].getSettings().height, stream.getVideoTracks()[0].getSettings().width)
+	// 		  video.srcObject = stream;
+	// 		  getScreen.style.display = "none";
+	// 		  stopScreen.style.display = "inline";
+	// 		}).catch(err => {
+	// 		  console.error('Could not get stream: ', err);
+	// 		});
+	// 	 } else {
+	// 		console.error('Could not get stream');
+	// 	  }
+	// 	});
+	//   });
 
-})();
+	// getScreen.addEventListener('click',  CallScreen());
+	  
+	//   stopScreen.addEventListener('click', event => {
+	// 	stream.getTracks().forEach(track => track.stop());
+	// 	video.src = '';
+	// 	stopScreen.style.display = "none";
+	// 	getScreen.style.display = "inline";
+	//   });
+	  
+	//   video.onmousemove = handleMouseMove;
+	//   function handleMouseMove(event) {
+	// 	var rect = video.getBoundingClientRect();
+		
+	// 	// move_mouse( event.clientY - rect.top, event.pageX - rect.left )
+	//   }
+	// })();
+	
+	// function move_mouse(X, Y){
+	//   var base_url = window.location.origin;
+    //   var xhttp = new XMLHttpRequest();
+	//   var json_obj = { "mouse_action": "move_mouse", "posX": X, "posY": Y }
+
+
+    //   xhttp.open("POST", base_url + "/mouse_handler", false);
+    //   xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+    //   xhttp.send(JSON.stringify(json_obj));
+		
+	// }
+
+
+	const getScreen  = document.getElementById('get-screen');
+	const localUsername = document.getElementById('user_name');
+	const roomName      = document.getElementById('room');
+	const localVideoRef = document.getElementById('localVideo');
+	const remoteVideoRef = document.getElementById('remoteVideo');
+	const socket = io("http://127.0.0.1:5004", {autoConnect: false,});
+	let pc; // For RTCPeerConnection Object
+
+	const startConnection = () => {
+			const EXTENSION_ID = document.getElementById('extension_id').value;
+			const request = { type: 'start_record', sources: ['window', 'screen', 'tab'] };
+			chrome.runtime.sendMessage(EXTENSION_ID, request, response => {
+				if (response && response.type === 'success') {
+					navigator.mediaDevices.getUserMedia({
+					video: {
+					mandatory: {
+						chromeMediaSource: 'desktop',
+						chromeMediaSourceId: response.streamId,
+					}
+					}
+				}).then(returnedStream => {
+					localVideoRef.srcObject = returnedStream;
+					console.log('start socket connect')
+					socket.connect();
+					socket.emit("join", { username: localUsername.value, room: roomName.value });
+
+				}).catch((error) => {
+					console.error("Stream not found: ", error);
+				});
+				} else {
+				console.error('Could not get stream');
+				}
+			})
+	};
+
+	const sendData = (data) => {
+		socket.emit("data", {
+		username: localUsername.value,
+		room: roomName.value,
+		data: data,
+		});
+	};
+
+	const onIceCandidate = (event) => {
+		if (event.candidate) {
+		console.log("Sending ICE candidate");
+		sendData({
+			type: "candidate",
+			candidate: event.candidate,
+		});
+		}
+	};
+
+	const onTrack = (event) => {
+		console.log("Adding remote track");
+		console.log(event)
+		remoteVideoRef.srcObject = event.streams[0];
+	};
+
+	const createPeerConnection = () => {
+		try {
+		pc = new RTCPeerConnection({
+			iceServers: [
+			{
+				urls: "stun:openrelay.metered.ca:80",
+			},
+			{
+				urls: "turn:openrelay.metered.ca:80",
+				username: "openrelayproject",
+				credential: "openrelayproject",
+			},
+			{
+				urls: "turn:openrelay.metered.ca:443",
+				username: "openrelayproject",
+				credential: "openrelayproject",
+			},
+			{
+				urls: "turn:openrelay.metered.ca:443?transport=tcp",
+				username: "openrelayproject",
+				credential: "openrelayproject",
+			},
+			],
+		});
+		pc.onicecandidate = onIceCandidate;
+		pc.ontrack = onTrack;
+		const localStream = localVideoRef.srcObject;
+		console.log(localStream)
+		for (const track of localStream.getTracks()) {
+			console.log('add Track to pc')
+			pc.addTrack(track, localStream);
+		}
+		console.log("PeerConnection created");
+		} catch (error) {
+		console.error("PeerConnection failed: ", error);
+		}
+	};
+
+	const setAndSendLocalDescription = (sessionDescription) => {
+		pc.setLocalDescription(sessionDescription);
+		console.log("Local description set");
+		sendData(sessionDescription);
+	};
+
+	const sendOffer = () => {
+		console.log("Sending offer");
+		pc.createOffer().then(setAndSendLocalDescription, (error) => {
+		console.error("Send offer failed: ", error);
+		});
+	};
+
+	const sendAnswer = () => {
+		console.log("Sending answer");
+		pc.createAnswer().then(setAndSendLocalDescription, (error) => {
+		console.error("Send answer failed: ", error);
+		});
+	};
+
+	const signalingDataHandler = (data) => {
+		if (data.type === "offer") {
+		createPeerConnection();
+		pc.setRemoteDescription(new RTCSessionDescription(data));
+		sendAnswer();
+		} else if (data.type === "answer") {
+		pc.setRemoteDescription(new RTCSessionDescription(data));
+		} else if (data.type === "candidate") {
+		pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+		} else {
+		console.log("Unknown Data");
+		}
+	};
+
+
+	getScreen.addEventListener('click', event => {
+		startConnection();
+	})
+
+
+	socket.on("ready", () => {
+		console.log("Ready to Connect!");
+		createPeerConnection();
+		sendOffer();
+	});
+
+	socket.on("data", (data) => {
+		console.log("Data received: ", data);
+		signalingDataHandler(data);
+	});
+
+
   </script>
 </body>
 </html>
