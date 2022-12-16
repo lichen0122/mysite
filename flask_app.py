@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
 from functools import wraps
-import pyautogui
 
 
 app = Flask(__name__)
@@ -60,20 +59,6 @@ def json_handler():
     
     return 'OK'
     
-@app.route('/mouse_handler', methods=['POST'])
-def mouse_handler(): 
-    request_json = request.get_json()
-    
-    pyautogui.moveTo(100, 150)
-    
-    action = request_json['mouse_action']
-    if action == 'move_mouse':
-        X = request_json['posX']
-        Y = request_json['posY']
-        
-        pyautogui.click(X, Y)
-    
-    return 'OK'
 
 if __name__ == '__main__':
     hw_status = 'Getting HW'
