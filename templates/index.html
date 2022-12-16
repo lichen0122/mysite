@@ -104,7 +104,7 @@
 	const roomName      = document.getElementById('room');
 	const localVideoRef = document.getElementById('localVideo');
 	const remoteVideoRef = document.getElementById('remoteVideo');
-	const socket = io("http://127.0.0.1:5004", {autoConnect: false,});
+	const socket = io("https://signaling-server-flask.herokuapp.com/", {autoConnect: false,});
 	let pc; // For RTCPeerConnection Object
 
 	const startConnection = () => {

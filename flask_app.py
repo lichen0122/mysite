@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, redirect, url_for
-from functools import wraps
 
 
 app = Flask(__name__)
