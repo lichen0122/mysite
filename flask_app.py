@@ -60,6 +60,7 @@ def get_script_status():
 @app.route('/json_handler', methods=['POST'])
 def json_handler(): 
     global hw_status
+    global script_status
     request_json = request.get_json()
     print(request_json)
     
