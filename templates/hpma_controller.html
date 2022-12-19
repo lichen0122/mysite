@@ -32,48 +32,22 @@
 
   <main>
     <section>
-    <!-- <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight"> HPMA Controller || <p id="hw_status"> Status: {{status}} </p> </h1> -->
 
-    <!-- <div class="text-center w-full mb-8">
-      <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-tight">HPMA Controller || status: {{status}}</h1>
-    </div>
-	
-    <div>
-		<form method='post' action={{ url_for('set_cur_hw_got') }}>
-			<button id="cur_hw_done" class="bn632-hover bn25" type="submit" py-click="set_cur_hw_got()">Cur Got</button>
-		</form>
-		  
-		<form method='post' action={{ url_for('set_cur_hw_done') }}>
-			<button id="cur_hw_done" class="bn632-hover bn25" type="submit" py-click="set_cur_hw_done()">Cur Done</button>
-		</form>
-		  
-		<form method='post' action={{ url_for('set_all_hw_done') }}>
-			<button id="all_hw_done" class="bn632-hover bn25" type="submit" py-click="set_all_hw_done()">All Done</button>
-		</form>
-		
-		<form method='post' action={{ url_for('get_hw_status') }}>
-			<button id="all_hw_done" class="bn632-hover bn25" type="submit" py-click="get_hw_status()">Get Status</button>
-		</form>
-
-    <form method='post' action={{ url_for('get_hw_status') }}>
-			<button id="all_hw_done" class="bn632-hover bn25" type="submit" py-click="get_hw_status()">Get Status</button>
-		</form>
-    </div> -->
 
     <div >
       <p style="margin:1;display:inline;">  HPMA Controller || </p>
-      <p id = "hw_status", style="margin:1;display:inline;"> Status: {{status}}  </p>
+      <p id = "hw_status", style="margin:1;display:inline;"> HW Status: {{status}}, Script Status: {{script_status}} </p>
     </div>
 
-    <button id="cur_hw_got"  class="bn632-hover bn25" type="submit" onclick="set_hw_status('Doing HW',   'cur_hw_got')">Cur Got</button>
-    <button id="cur_hw_done" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Getting HW', 'cur_hw_done')">Cur Done</button>
-    <button id="all_hw_done" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Terminated', 'all_hw_done')">All Done</button>
+	<div >
+    <button id="cur_hw_done" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Getting HW', 'cur_hw_done')">Cur HW Done</button>
+    <button id="all_hw_done" class="bn632-hover bn25" type="submit" onclick="set_hw_status('Terminated', 'all_hw_done')">All HW Done</button>
+	</div>
+	
+	<div >
+    <button id="script_done" class="bn632-hover bn25" type="submit" onclick="set_script_status('Terminated', 'script_done')">Script Done</button>
+	</div>
 
-    <div>
-    <button id="get_hw_status" class="bn632-hover bn25" type="submit" onclick="get_hw_status()">Get Status</button>
-    </div>
-    
-    <video controls autoplay></video>
 
     </section>
   </main>
@@ -91,16 +65,15 @@
     function set_hw_status(hw_status, role){
       var json_obj = { "hw_status": hw_status, "role": role }
       send_json(json_obj)
-      get_hw_status()
+      location.reload()
+    }
+	
+    function set_script_status(hw_status, role){
+      var json_obj = { "script_status": hw_status, "role": role }
+      send_json(json_obj)
+      location.reload()
     }
 
-    function get_hw_status(){
-      var base_url = window.location.origin;
-      var xhttp = new XMLHttpRequest();
-      xhttp.open("POST", base_url + "/get_hw_status", false);
-      xhttp.send();
-      document.getElementById("hw_status").innerHTML = xhttp.responseText;
-    }
   </script>
 </body>
 </html>
