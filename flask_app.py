@@ -61,14 +61,17 @@ def get_script_status():
 def json_handler(): 
     global hw_status
     request_json = request.get_json()
+    print(request_json)
     
     try:
         hw_status = request_json['hw_status']
+        print('set hw_status to', hw_status)
     except:
         ''
         
     try:
         script_status = request_json['script_status']
+        print('set script_status to', script_status)
     except:
         'script_status'
     
