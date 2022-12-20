@@ -9,6 +9,8 @@ hw_status = 'Getting HW'
 script_status = 'Doing'
 script_status = 'Terminated'
 
+next_script_idx = 0
+
 
 @app.route('/screen', methods=['GET', 'POST'])
 def screen():
@@ -23,7 +25,7 @@ def hello_world():
 
 @app.route('/hpma_controller', methods=['GET', 'POST'])
 def hpma_controller():
-    return render_template("hpma_controller.html", status=hw_status, script_status=script_status)
+    return render_template("hpma_controller.html", status=hw_status, script_status=script_status, next_script_idx=next_script_idx)
     
 
 # @app.route('/set_cur_hw_got', methods=['GET', 'POST'])
@@ -57,10 +59,17 @@ def get_script_status():
     global script_status
     return script_status
     
+@app.route('/get_next_script_idx', methods=['GET', 'POST'])
+def get_next_script_idx():
+    global next_script_idx
+    return next_script_idx
+    
 @app.route('/json_handler', methods=['POST'])
 def json_handler(): 
     global hw_status
     global script_status
+    global next_script_idx
+    
     request_json = request.get_json()
     print(request_json)
     
@@ -68,13 +77,23 @@ def json_handler():
         hw_status = request_json['hw_status']
         print('set hw_status to', hw_status)
     except:
-        ''
+        'hw_status'
         
     try:
         script_status = request_json['script_status']
         print('set script_status to', script_status)
     except:
         'script_status'
+        
+    try:
+        add_next_script_idx = int(request_json['next_script_idx'])
+        if next_script_idx > 0:
+            next_script_idx = next_script_idx + int(add_next_script_idx)
+        else:
+            next_script_idx = 0
+        print('set next_script_idx to', next_script_idx)
+    except:
+        'next_script_idx'
     
     
     return 'OK'

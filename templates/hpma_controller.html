@@ -36,7 +36,7 @@
 
     <div >
       <p style="margin:1;display:inline;">  HPMA Controller || </p>
-      <p id = "hw_status", style="margin:1;display:inline;"> HW Status: {{status}}, Script Status: {{script_status}} </p>
+      <p id = "hw_status", style="margin:1;display:inline;"> HW Status: {{status}}, Script Status: {{script_status}}, Script Index: {{next_script_idx}} </p>
     </div>
 
 	<div >
@@ -47,7 +47,13 @@
 	<div >
     <button id="script_doing" class="bn632-hover bn25" type="submit" onclick="set_script_status('Doing', 'script_done')">Script Doing</button>
     <button id="script_done" class="bn632-hover bn25" type="submit" onclick="set_script_status('Terminated', 'script_done')">Script Done</button>
-    <button id="script_done" class="bn632-hover bn25" type="submit" onclick="set_script_status('Shutdown', 'script_done')">Shut Down</button>
+    <button id="shut_down" class="bn632-hover bn25" type="submit" onclick="set_script_status('Shutdown', 'shut_down')">Shut Down</button>
+	</div>
+	
+	
+	<div >
+    <button id="next_script" class="bn632-hover bn25" type="submit" onclick="set_next_script_idx('1',   'next_script')">Next Script</button>
+    <button id="reset_script" class="bn632-hover bn25" type="submit" onclick="set_next_script_idx('-1', 'next_script')">Reset Script</button>
 	</div>
 
 
@@ -72,6 +78,12 @@
 	
     function set_script_status(hw_status, role){
       var json_obj = { "script_status": hw_status, "role": role }
+      send_json(json_obj)
+      location.reload()
+    }
+	
+    function set_next_script_idx(inc, role){
+      var json_obj = { "add_next_script_idx": inc, "role": role }
       send_json(json_obj)
       location.reload()
     }
