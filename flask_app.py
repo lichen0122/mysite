@@ -86,7 +86,7 @@ def json_handler():
         'script_status'
         
     try:
-        add_next_script_idx = int(request_json['next_script_idx'])
+        add_next_script_idx = int(request_json['add_next_script_idx'])
         if next_script_idx > 0:
             next_script_idx = next_script_idx + int(add_next_script_idx)
         else:
