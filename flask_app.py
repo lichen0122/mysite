@@ -62,7 +62,7 @@ def get_script_status():
 @app.route('/get_next_script_idx', methods=['GET', 'POST'])
 def get_next_script_idx():
     global next_script_idx
-    return next_script_idx
+    return str(next_script_idx)
     
 @app.route('/json_handler', methods=['POST'])
 def json_handler(): 
