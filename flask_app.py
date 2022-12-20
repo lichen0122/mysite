@@ -87,7 +87,7 @@ def json_handler():
         
     try:
         add_next_script_idx = int(request_json['add_next_script_idx'])
-        if next_script_idx > 0:
+        if add_next_script_idx > 0:
             next_script_idx = next_script_idx + int(add_next_script_idx)
         else:
             next_script_idx = 0
